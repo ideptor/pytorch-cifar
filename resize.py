@@ -15,6 +15,7 @@ def get_args() -> dict:
     parser.add_argument("--input", "-i", type=str, default="data")
     parser.add_argument("--output", "-o", type=str, required=True)
     parser.add_argument("--size", "-s", type=int, default=128)
+    parser.add_argument("--train-ratio", "-r", type=float, default=.8)
 
     return parser.parse_args()
 
@@ -50,4 +51,4 @@ def prepare_train_test_images(src: str, dst: str, size: int, train_ratio: float=
 
 if __name__ == '__main__':
     args = get_args()
-    prepare_train_test_images(args.input, args.output, args.size)
+    prepare_train_test_images(args.input, args.output, args.size, args.train_ratio)
