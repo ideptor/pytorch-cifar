@@ -4,7 +4,6 @@ from tqdm import tqdm
 from PIL import Image
 
 
-
 def get_args() -> dict:
     parser = ArgumentParser(
         prog="resize images",
@@ -32,6 +31,7 @@ def resize(src: str, dst: str, size: int):
             except OSError as e:
                 print(e, ' < ', img_src_path)
         pbar.close()
+
 
 if __name__ == '__main__':
     args = get_args()
