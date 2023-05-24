@@ -1,17 +1,30 @@
-# Train CIFAR10 with PyTorch
-
-I'm playing with [PyTorch](http://pytorch.org/) on the CIFAR10 dataset.
+# Train Resnet18
 
 ## Prerequisites
-- Python 3.6+
-- PyTorch 1.0+
+- Python 3.10
+- PyTorch 2.0.1
+
+### install pre-commit
+```
+pip install pre-commit
+pre-commit sample-config > .pre-commit-config.yaml
+pre-commit install
+```
+
+## Prepare dataset
+https://www.kaggle.com/datasets/anirudhg15/mammals-classification
+
+### Resize
+```
+python resize.py --input [origin] --output [output] --size [size]
+```
 
 ## Training
 ```
-# Start training with: 
+# Start training with:
 python main.py
 
-# You can manually resume the training with: 
+# You can manually resume the training with:
 python main.py --resume --lr=0.01
 ```
 
@@ -32,4 +45,3 @@ python main.py --resume --lr=0.01
 | [PreActResNet18](https://arxiv.org/abs/1603.05027)    | 95.11%      |
 | [DPN92](https://arxiv.org/abs/1707.01629)             | 95.16%      |
 | [DLA](https://arxiv.org/pdf/1707.06484.pdf)           | 95.47%      |
-
