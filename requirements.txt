@@ -20,6 +20,7 @@ sympy==1.11.1
 torch==2.0.1+cpu
 torchaudio==2.0.2+cpu
 torchvision==0.15.2+cpu
+tqdm==4.65.0
 typing_extensions==4.4.0
 urllib3==1.26.13
 virtualenv==20.23.0
