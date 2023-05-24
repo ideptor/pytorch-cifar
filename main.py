@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
     # testset = torchvision.datasets.CIFAR10(
     #     root='./data', train=False, download=True, transform=transform_test)
-    testset = ImageFolder("dataset/train", transform=transform_test)
+    testset = ImageFolder("dataset/val", transform=transform_test)
     testloader = torch.utils.data.DataLoader(
         testset, batch_size=16, shuffle=False, num_workers=2)
 
@@ -148,7 +148,7 @@ if __name__ == '__main__':
                         momentum=0.9, weight_decay=5e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
-    for epoch in range(start_epoch, start_epoch+200):
+    for epoch in range(start_epoch, start_epoch+25):
         train(epoch)
         test(epoch)
         scheduler.step()
