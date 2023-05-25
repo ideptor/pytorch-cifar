@@ -190,7 +190,7 @@ if __name__ == '__main__':
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
     logfile_writer = open(
-        f"{datetime.now().strftime('trainlog_%Y%m%d_%H%M%S')}{'_resume' if args.resume else ''}.txt", "w")
+        f"logs/{datetime.now().strftime('trainlog_%Y%m%d_%H%M%S')}{'_resume' if args.resume else ''}.txt", "w")
     logfile_writer.write(
         json.dumps(
             dict(
