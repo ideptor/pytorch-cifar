@@ -55,7 +55,7 @@ def train(epoch):
         end = time()
 
         log = (
-            f"[{epoch+1}/{end_epoch}][TRAIN {batch_idx+1:02d}/16] "
+            f"[{epoch+1}/{end_epoch}][TRAIN {batch_idx+1:02d}/65] "
             f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
             f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
             f"Loss: {(train_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}% | Hit: {correct}/{total}"
@@ -137,16 +137,16 @@ if __name__ == '__main__':
     # Data
     print('==> Preparing data..')
     transform_train = transforms.Compose([
-        # transforms.RandomCrop(32, padding=4),
+        transforms.RandomCrop(64, padding=4),
         # transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 
     ])
 
     transform_test = transforms.Compose([
         transforms.ToTensor(),
-        # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
 
     # trainset = torchvision.datasets.CIFAR10(
