@@ -1,4 +1,5 @@
 '''Train Resnet18 with PyTorch.'''
+from datetime import datetime
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -51,12 +52,17 @@ def train(epoch):
 
         # pbar.set_postfix(loss=(train_loss/(batch_idx+1)), acc=(100.*correct/total), hit=f"{correct}/{total}")
         end = time()
-        print(f"[TRAIN] [{batch_idx+1:02d}/16] "
-              f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
-              f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
-              f"Loss: {(train_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}%({correct}/{total})"
-            )
 
+        log = (
+            f"[TRAIN] [{batch_idx+1:02d}/16] "
+            f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
+            f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
+            f"Loss: {(train_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}% | Hit: {correct}/{total}"
+        )
+        print(log)
+        logfile_writer.write(log+"\n")
+        logfile_writer.flush()
+        
 def test(epoch):
     global best_acc
     net.eval()
@@ -82,11 +88,16 @@ def test(epoch):
             # pbar.set_postfix(loss=(test_loss/(batch_idx+1)), acc=(100.*correct/total), hit=f"{correct}/{total}")
             # print(f"{batch_idx}/4, loss={(test_loss/(batch_idx+1)):.5f}, acc={(100.*correct/total)}({correct}/{total})")
             end = time()
-            print(f"[TEST] [{batch_idx+1:d}/4] "
-              f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
-              f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
-              f"Loss: {(test_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}({correct}/{total})"
+            log = (
+                f"[TEST] [{batch_idx+1:d}/4] "
+                f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
+                f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
+                f"Loss: {(test_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f} | Hit: {correct}/{total}"
             )
+            print(log)
+            logfile_writer.write(log+"\n")
+            logfile_writer.flush()
+
     # Save checkpoint.
     acc = 100.*correct/total
     if acc > best_acc:
@@ -115,6 +126,8 @@ def get_args() -> dict:
 if __name__ == '__main__':
 
     args = get_args()
+
+    
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     best_acc = 0  # best test accuracy
@@ -174,7 +187,10 @@ if __name__ == '__main__':
                         momentum=0.9, weight_decay=5e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
+    logfile_writer = open(datetime.now().strftime('trainlog_%Y%m%d_%H%M%S.txt'), "w")
     for epoch in range(start_epoch, start_epoch+25):
         train(epoch)
         test(epoch)
         scheduler.step()
+
+    logfile_writer.close()
