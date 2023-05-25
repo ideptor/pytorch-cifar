@@ -1,5 +1,6 @@
 '''Train Resnet18 with PyTorch.'''
 from datetime import datetime
+import json
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -92,7 +93,7 @@ def test(epoch):
                 f"[TEST] [{batch_idx+1:d}/4] "
                 f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
                 f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
-                f"Loss: {(test_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f} | Hit: {correct}/{total}"
+                f"Loss: {(test_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}% | Hit: {correct}/{total}"
             )
             print(log)
             logfile_writer.write(log+"\n")
@@ -115,7 +116,7 @@ def test(epoch):
 
 def get_args() -> dict:
     parser = argparse.ArgumentParser(description='PyTorch Resnet18 Training')
-    parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
+    parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true',
                         help='resume from checkpoint')
     args = parser.parse_args()
@@ -183,11 +184,21 @@ if __name__ == '__main__':
         start_epoch = checkpoint['epoch']
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=args.lr,
-                        momentum=0.9, weight_decay=5e-4)
+    # optimizer = optim.SGD(net.parameters(), lr=args.lr,
+    #                     momentum=0.9, weight_decay=5e-4)
+    optimizer = optim.Adam(net.parameters(), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
-    logfile_writer = open(datetime.now().strftime('trainlog_%Y%m%d_%H%M%S.txt'), "w")
+    logfile_writer = open(
+        f"{datetime.now().strftime('trainlog_%Y%m%d_%H%M%S')}{'_resume' if args.resume else ''}.txt", "w")
+    logfile_writer.write(
+        json.dumps(
+            dict(
+                learning_rate = args.lr,
+                resume=args.resume,
+            )
+        )+"\n"
+    )
     for epoch in range(start_epoch, start_epoch+25):
         train(epoch)
         test(epoch)
