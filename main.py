@@ -6,14 +6,17 @@ import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 from torchvision.datasets import ImageFolder
 
-import torchvision
+# import torchvision
 import torchvision.transforms as transforms
 
 import os
 import argparse
 
+from time import time
+
 from models import *
-from utils import progress_bar
+from tqdm import tqdm
+# from utils import progress_bar
 
 
 
@@ -24,7 +27,13 @@ def train(epoch):
     train_loss = 0
     correct = 0
     total = 0
+
+    # pbar = tqdm(enumerate(trainloader))
+
+    tot_start = time()
     for batch_idx, (inputs, targets) in enumerate(trainloader):
+    # for batch_idx, (inputs, targets) in pbar:
+        step_start = time()
         inputs, targets = inputs.to(device), targets.to(device)
         optimizer.zero_grad()
         outputs = net(inputs)
@@ -37,9 +46,16 @@ def train(epoch):
         total += targets.size(0)
         correct += predicted.eq(targets).sum().item()
 
-        progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                     % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+        # progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+        #              % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
+        # pbar.set_postfix(loss=(train_loss/(batch_idx+1)), acc=(100.*correct/total), hit=f"{correct}/{total}")
+        end = time()
+        print(f"[TRAIN] [{batch_idx+1:02d}/16] "
+              f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
+              f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
+              f"Loss: {(train_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}%({correct}/{total})"
+            )
 
 def test(epoch):
     global best_acc
@@ -48,7 +64,10 @@ def test(epoch):
     correct = 0
     total = 0
     with torch.no_grad():
+        # pbar = enumerate(testloader)
+        tot_start = time()
         for batch_idx, (inputs, targets) in enumerate(testloader):
+            step_start = time()
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
             loss = criterion(outputs, targets)
@@ -58,9 +77,16 @@ def test(epoch):
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
-            progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                         % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
-
+            # progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+            #              % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
+            # pbar.set_postfix(loss=(test_loss/(batch_idx+1)), acc=(100.*correct/total), hit=f"{correct}/{total}")
+            # print(f"{batch_idx}/4, loss={(test_loss/(batch_idx+1)):.5f}, acc={(100.*correct/total)}({correct}/{total})")
+            end = time()
+            print(f"[TEST] [{batch_idx+1:d}/4] "
+              f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
+              f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
+              f"Loss: {(test_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}({correct}/{total})"
+            )
     # Save checkpoint.
     acc = 100.*correct/total
     if acc > best_acc:
@@ -100,13 +126,13 @@ if __name__ == '__main__':
         # transforms.RandomCrop(32, padding=4),
         # transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 
     ])
 
     transform_test = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
 
     # trainset = torchvision.datasets.CIFAR10(
