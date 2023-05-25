@@ -17,13 +17,14 @@ def get_args() -> dict:
     parser.add_argument("--input", "-i", type=str, default="data")
     parser.add_argument("--output", "-o", type=str, required=True)
     parser.add_argument("--size", "-s", type=int, default=128)
+    parser.add_argument("--augment", "-a", type=int, default=10)
     parser.add_argument("--train-ratio", "-r", type=float, default=.8)
     parser.add_argument("--verbose", "-v", action="store_true")
 
     return parser.parse_args()
 
 
-def prepare_train_test_images(src: str, dst: str, size: int, train_ratio: float=.8, verbose: bool=False):
+def prepare_train_test_images(src: str, dst: str, size: int, train_ratio: float=.8, augment_size: int=1, verbose: bool=False):
 
     summary_report = dict()
 
@@ -52,10 +53,15 @@ def prepare_train_test_images(src: str, dst: str, size: int, train_ratio: float=
         image_org = f'{src}/{image.split("/",2)[2]}'
         try:
             pbar.set_postfix(org=image_org, dst=image)
-            Image.open(image_org).resize((size,size)).save(image)
-
             _, phase, label, _  = image.split("/", 4)
-            summary_report[phase][label] += 1
+            
+            if phase == "train":
+                for i in range(augment_size):
+                    Image.open(image_org).resize((size,size)).save(image.rsplit(".",2)[0]+f"_{i}.{image.rsplit('.',2)[1]}")
+                    summary_report[phase][label] += 1
+            else:
+                Image.open(image_org).resize((size,size)).save(image)
+                summary_report[phase][label] += 1
 
         except OSError as e:
             print(e, ' :: ', image_org)
@@ -80,4 +86,4 @@ def prepare_train_test_images(src: str, dst: str, size: int, train_ratio: float=
 
 if __name__ == '__main__':
     args = get_args()
-    prepare_train_test_images(args.input, args.output, args.size, args.train_ratio, args.verbose)
+    prepare_train_test_images(args.input, args.output, args.size, args.train_ratio, args.augment, args.verbose)
