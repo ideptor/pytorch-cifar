@@ -55,7 +55,7 @@ def train(epoch):
         end = time()
 
         log = (
-            f"[TRAIN] [{batch_idx+1:02d}/16] "
+            f"[{epoch+1}/{end_epoch}][TRAIN {batch_idx+1:02d}/16] "
             f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
             f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
             f"Loss: {(train_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}% | Hit: {correct}/{total}"
@@ -90,7 +90,7 @@ def test(epoch):
             # print(f"{batch_idx}/4, loss={(test_loss/(batch_idx+1)):.5f}, acc={(100.*correct/total)}({correct}/{total})")
             end = time()
             log = (
-                f"[TEST] [{batch_idx+1:d}/4] "
+                f"[{epoch+1}/{end_epoch}][TEST {batch_idx+1:d}/4] "
                 f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
                 f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
                 f"Loss: {(test_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}% | Hit: {correct}/{total}"
@@ -199,7 +199,8 @@ if __name__ == '__main__':
             )
         )+"\n"
     )
-    for epoch in range(start_epoch, start_epoch+25):
+    end_epoch = start_epoch+25
+    for epoch in range(start_epoch, end_epoch):
         train(epoch)
         test(epoch)
         scheduler.step()
