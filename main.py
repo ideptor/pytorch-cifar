@@ -18,7 +18,7 @@ from time import time
 
 from models import *
 from tqdm import tqdm
-# from utils import progress_bar
+from utils import progress_bar
 
 
 
@@ -48,21 +48,21 @@ def train(epoch):
         total += targets.size(0)
         correct += predicted.eq(targets).sum().item()
 
-        # progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-        #              % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+        progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+                     % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
         # pbar.set_postfix(loss=(train_loss/(batch_idx+1)), acc=(100.*correct/total), hit=f"{correct}/{total}")
-        end = time()
+    end = time()
 
-        log = (
-            f"[{epoch+1}/{end_epoch}][TRAIN {batch_idx+1:02d}/65] "
-            f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
-            f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
-            f"Loss: {(train_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}% | Hit: {correct}/{total}"
-        )
-        print(log)
-        logfile_writer.write(log+"\n")
-        logfile_writer.flush()
+    log = (
+        f"[{epoch+1}/{end_epoch}][TRAIN {batch_idx+1:02d}/65] "
+        f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
+        f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
+        f"Loss: {(train_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}% | Hit: {correct}/{total}"
+    )
+    # print(log)
+    logfile_writer.write(log+"\n")
+    logfile_writer.flush()
         
 def test(epoch):
     global best_acc
@@ -84,20 +84,20 @@ def test(epoch):
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
-            # progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-            #              % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
+            progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+                         % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
             # pbar.set_postfix(loss=(test_loss/(batch_idx+1)), acc=(100.*correct/total), hit=f"{correct}/{total}")
             # print(f"{batch_idx}/4, loss={(test_loss/(batch_idx+1)):.5f}, acc={(100.*correct/total)}({correct}/{total})")
-            end = time()
-            log = (
-                f"[{epoch+1}/{end_epoch}][TEST {batch_idx+1:d}/4] "
-                f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
-                f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
-                f"Loss: {(test_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}% | Hit: {correct}/{total}"
-            )
-            print(log)
-            logfile_writer.write(log+"\n")
-            logfile_writer.flush()
+        end = time()
+        log = (
+            f"[{epoch+1}/{end_epoch}][TEST {batch_idx+1:d}/4] "
+            f"Step: {int(end-step_start):d}s{int(((end-step_start)-int(end-step_start))*1000):03d}ms | "
+            f"Tot: {int((end-tot_start)/60):02d}m{int(end-tot_start)%60:02d}s | "
+            f"Loss: {(test_loss/(batch_idx+1)):.6f} | Acc: {(100.*correct/total):.2f}% | Hit: {correct}/{total}"
+        )
+        # print(log)
+        logfile_writer.write(log+"\n")
+        logfile_writer.flush()
 
     # Save checkpoint.
     acc = 100.*correct/total
@@ -116,9 +116,13 @@ def test(epoch):
 
 def get_args() -> dict:
     parser = argparse.ArgumentParser(description='PyTorch Resnet18 Training')
+    parser.add_argument('--epoch', '-e', default=15, type=int, help='epochs')
+    parser.add_argument('--size', '-s', default=128, type=int, help='image size')
+    parser.add_argument('--dataset', '-d', type=str, default="dataset", help='dataset folder')
     parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true',
                         help='resume from checkpoint')
+    parser.add_argument("--gpu", "-g", action="store_true")
     args = parser.parse_args()
 
     return args
@@ -128,16 +132,20 @@ if __name__ == '__main__':
 
     args = get_args()
 
-    
+    os.makedirs("logs", exist_ok=True)
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    if args.gpu:
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    else:
+        device = 'cpu'
+    
     best_acc = 0  # best test accuracy
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
     # Data
     print('==> Preparing data..')
     transform_train = transforms.Compose([
-        transforms.RandomCrop(64, padding=4),
+        # transforms.RandomCrop(64, padding=4),
         # transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
@@ -151,13 +159,13 @@ if __name__ == '__main__':
 
     # trainset = torchvision.datasets.CIFAR10(
     #     root='./data', train=True, download=True, transform=transform_train)
-    trainset = ImageFolder("dataset/train", transform=transform_train)
+    trainset = ImageFolder(f"{args.dataset}/train", transform=transform_train)
     trainloader = torch.utils.data.DataLoader(
         trainset, batch_size=16, shuffle=True, num_workers=2)
 
     # testset = torchvision.datasets.CIFAR10(
     #     root='./data', train=False, download=True, transform=transform_test)
-    testset = ImageFolder("dataset/val", transform=transform_test)
+    testset = ImageFolder(f"{args.dataset}/val", transform=transform_test)
     testloader = torch.utils.data.DataLoader(
         testset, batch_size=16, shuffle=False, num_workers=2)
 
@@ -167,7 +175,7 @@ if __name__ == '__main__':
 
     # Model
     print('==> Building model..')
-    net = ResNet18(len(classes))
+    net = ResNet18(len(classes), args.size)
 
     net = net.to(device)
     if device == 'cuda':
@@ -191,15 +199,18 @@ if __name__ == '__main__':
 
     logfile_writer = open(
         f"logs/{datetime.now().strftime('trainlog_%Y%m%d_%H%M%S')}{'_resume' if args.resume else ''}.txt", "w")
+    # logfile_writer.write(
+    #     json.dumps(
+    #         dict(
+    #             learning_rate = args.lr,
+    #             resume=args.resume,
+    #         )
+    #     )+"\n"
+    # )
     logfile_writer.write(
-        json.dumps(
-            dict(
-                learning_rate = args.lr,
-                resume=args.resume,
-            )
-        )+"\n"
+        json.dumps(vars(args))
     )
-    end_epoch = start_epoch+25
+    end_epoch = start_epoch+args.epoch
     for epoch in range(start_epoch, end_epoch):
         train(epoch)
         test(epoch)

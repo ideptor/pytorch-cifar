@@ -71,9 +71,10 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10):
+    def __init__(self, block, num_blocks, num_classes=10, img_size:int=128):
         super(ResNet, self).__init__()
         self.in_planes = 64
+        self.ing_size=img_size
 
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3,
                                stride=1, padding=1, bias=False)
@@ -83,8 +84,10 @@ class ResNet(nn.Module):
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         # self.linear = nn.Linear(512*block.expansion, num_classes)
-        # self.linear = nn.Linear(8192*block.expansion, num_classes)
-        self.linear = nn.Linear(2048*block.expansion, num_classes)
+        if img_size == 128:
+            self.linear = nn.Linear(8192*block.expansion, num_classes)
+        elif img_size == 64:
+            self.linear = nn.Linear(2048*block.expansion, num_classes)
 
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1]*(num_blocks-1)
@@ -106,8 +109,8 @@ class ResNet(nn.Module):
         return out
 
 
-def ResNet18(num_classes: int):
-    return ResNet(BasicBlock, [2, 2, 2, 2], num_classes)
+def ResNet18(num_classes: int, img_size:int = 128):
+    return ResNet(BasicBlock, [2, 2, 2, 2], num_classes, img_size)
 
 
 def ResNet34():
