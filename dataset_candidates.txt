@@ -1,0 +1,17 @@
+
+https://www.kaggle.com/datasets/lasaljaywardena/furniture-images-dataset/code
+
+csv 파일을 읽어서 lookup table 만들기
+ - key: image file 이름
+ - value: Furniture Type의 첫번째 category (ex. Bd, TV, Table, Storage)
+ㅣ
+1. 이미지를 읽어서
+2. lookup table 에서 category확인후
+3. category이름의 폴더로 데이터 이동
+ 
+데이터 개수 대략 1만개
+
+
+https://www.kaggle.com/datasets/rhtsingh/google-universal-image-embeddings-128x128
+universia dataset
+furniture폴더에 라벨링 안된 데이터들이 있어서 수동으로 라벨링해주어야 함
