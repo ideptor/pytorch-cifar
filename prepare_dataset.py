@@ -17,7 +17,7 @@ def get_args() -> dict:
     parser.add_argument("--input", "-i", type=str, default="data")
     parser.add_argument("--output", "-o", type=str, required=True)
     parser.add_argument("--size", "-s", type=int, default=128)
-    parser.add_argument("--augment", "-a", type=int, default=10)
+    parser.add_argument("--augment", "-a", type=int, default=1)
     parser.add_argument("--train-ratio", "-r", type=float, default=.8)
     parser.add_argument("--verbose", "-v", action="store_true")
 

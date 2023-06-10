@@ -15,3 +15,8 @@ csv 파일을 읽어서 lookup table 만들기
 https://www.kaggle.com/datasets/rhtsingh/google-universal-image-embeddings-128x128
 universia dataset
 furniture폴더에 라벨링 안된 데이터들이 있어서 수동으로 라벨링해주어야 함
+
+
+Exclude:::::::::::::::;
+pillow
+chair 
