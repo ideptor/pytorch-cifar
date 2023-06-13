@@ -53,7 +53,7 @@ def prepare_train_test_images(src: str, dst: str, size: int, train_ratio: float=
     for image in pbar:
         image_org = f'{src}/{image.split("/",2)[2]}'
         try:
-            pbar.set_postfix(org=image_org[:30])
+            pbar.set_description(image_org[:35])
             _, phase, label, _  = image.split("/", 4)
             
             if phase == "train":
