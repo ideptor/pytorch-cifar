@@ -28,7 +28,7 @@ pre-commit install
 ## Prepare dataset
 ```
 python prepare_furniture_image.py -o furniture_images
-python prepare_dataset.py -i furniture_images -o dataset-furnitures
-python main.py -d dataset-furnitures/ -e 1000 -g
+python prepare_dataset.py -i furniture_images -o dataset-furnitures-3
+python main.py -d dataset-furnitures-3/ -e 1000 -b 128 -g
 
 ```
