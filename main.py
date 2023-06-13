@@ -118,6 +118,7 @@ def get_args() -> dict:
     parser = argparse.ArgumentParser(description='PyTorch Resnet18 Training')
     parser.add_argument('--epoch', '-e', default=15, type=int, help='epochs')
     parser.add_argument('--size', '-s', default=128, type=int, help='image size')
+    parser.add_argument('--batch-size', '-b', default=32, type=int, help='batch size')
     parser.add_argument('--dataset', '-d', type=str, default="dataset", help='dataset folder')
     parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true',
@@ -162,13 +163,13 @@ if __name__ == '__main__':
     #     root='./data', train=True, download=True, transform=transform_train)
     trainset = ImageFolder(f"{args.dataset}/train", transform=transform_train)
     trainloader = torch.utils.data.DataLoader(
-        trainset, batch_size=16, shuffle=True, num_workers=2)
+        trainset, batch_size=args.batch_size, shuffle=True, num_workers=2)
 
     # testset = torchvision.datasets.CIFAR10(
     #     root='./data', train=False, download=True, transform=transform_test)
     testset = ImageFolder(f"{args.dataset}/val", transform=transform_test)
     testloader = torch.utils.data.DataLoader(
-        testset, batch_size=16, shuffle=False, num_workers=2)
+        testset, batch_size=args.batch_size, shuffle=False, num_workers=2)
 
     # classes = ('plane', 'car', 'bird', 'cat', 'deer',
     #         'dog', 'frog', 'horse', 'ship', 'truck')
