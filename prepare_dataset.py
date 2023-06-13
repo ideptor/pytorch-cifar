@@ -43,16 +43,17 @@ def prepare_train_test_images(src: str, dst: str, size: int, train_ratio: float=
         os.makedirs(f'{dst}/train/{label}', exist_ok=True)
         os.makedirs(f'{dst}/val/{label}', exist_ok=True)
 
-    pbar = tqdm(images)
+    
 
     summary_report['total_images'] = len(images)
     summary_report['train'] = defaultdict(int)
     summary_report['val'] = defaultdict(int)
 
+    pbar = tqdm(images)
     for image in pbar:
         image_org = f'{src}/{image.split("/",2)[2]}'
         try:
-            pbar.set_postfix(org=image_org, dst=image)
+            pbar.set_postfix(org=image_org[:30])
             _, phase, label, _  = image.split("/", 4)
             
             if phase == "train":
