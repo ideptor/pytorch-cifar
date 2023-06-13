@@ -3,6 +3,8 @@ data
 dataset
 .python-version
 logs
+dataset*
+furniture*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
