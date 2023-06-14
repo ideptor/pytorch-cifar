@@ -84,8 +84,8 @@ def test(epoch):
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
-            progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                         % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
+            progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d) | Best: %.3f%% '
+                         % (test_loss/(batch_idx+1), 100.*correct/total, correct, total, best_acc))
             # pbar.set_postfix(loss=(test_loss/(batch_idx+1)), acc=(100.*correct/total), hit=f"{correct}/{total}")
             # print(f"{batch_idx}/4, loss={(test_loss/(batch_idx+1)):.5f}, acc={(100.*correct/total)}({correct}/{total})")
         end = time()
